@@ -141,16 +141,16 @@ class AttentionUNet(nn.Module):
         self.down4 = Down(512, 1024 // factor)
 
         # Attention blocks
-        self.att1 = AttentionBlock(in_g=512,          in_x=512,          inter_ch=256)
-        self.att2 = AttentionBlock(in_g=256,          in_x=256,          inter_ch=128)
-        self.att3 = AttentionBlock(in_g=128,          in_x=128,          inter_ch=64)
-        self.att4 = AttentionBlock(in_g=64,           in_x=64,           inter_ch=32)
+        self.att1 = AttentionBlock(in_g=512, in_x=512, inter_ch=256)
+        self.att2 = AttentionBlock(in_g=512, in_x=256, inter_ch=128)
+        self.att3 = AttentionBlock(in_g=256, in_x=128, inter_ch=64)
+        self.att4 = AttentionBlock(in_g=128, in_x=64,  inter_ch=32)
 
         # Decoder (upsampling + conv, using attention-refined skips)
         self.up1 = UpNoAttention(1024, 512 // factor, bilinear)
-        self.up2 = UpNoAttention(512, 256 // factor, bilinear)
-        self.up3 = UpNoAttention(256, 128 // factor, bilinear)
-        self.up4 = UpNoAttention(128, 64, bilinear)
+        self.up2 = UpNoAttention((512 // factor) + 256, 256 // factor, bilinear)
+        self.up3 = UpNoAttention((256 // factor) + 128, 128 // factor, bilinear)
+        self.up4 = UpNoAttention((128 // factor) + 64, 64, bilinear)
 
         self.outc = OutConv(64, n_classes)
 

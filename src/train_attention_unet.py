@@ -52,7 +52,8 @@ def train_attention_unet(
         epoch_loss = 0.0
         start_time = time.time()
 
-        for images, masks in train_loader:
+        num_batches = len(train_loader)
+        for batch_idx, (images, masks) in enumerate(train_loader, start=1):
             images = images.to(device)
             masks  = masks.to(device)
 
@@ -67,6 +68,11 @@ def train_attention_unet(
             optimizer.step()
 
             epoch_loss += loss.item() * images.size(0)
+
+            # progress within this epoch
+            done_pct = 100.0 * batch_idx / num_batches
+            print(f"\rEpoch {epoch}/{num_epochs} - {done_pct:5.1f}% done", end="")
+        print()  # newline after epoch
 
         epoch_loss /= len(train_dataset)
         history["train_loss"].append(epoch_loss)
