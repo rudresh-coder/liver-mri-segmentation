@@ -2,6 +2,7 @@ import sys
 from pathlib import Path
 
 import torch
+import pandas as pd
 
 # Ensure imports work whether you run from project root or from src/
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
@@ -49,28 +50,38 @@ def main():
     print(f"\nDevice: {device}")
     print("Model Parameter Count (Trainable Only):\n")
 
-    total_params = 0
+    rows = []
     for name, model in models.items():
         model = model.to(device)
-        model.eval()
+        params_m = count_parameters(model) / 1e6
+        mb = sizeof_mb(model)
 
-        params = count_parameters(model)
-        total_params += params
+        display_name = {
+            "UNet": "U-Net",
+            "SmallUNet": "Small U-Net",
+            "AttentionUNet": "Attention U-Net",
+            "UNet++": "UNet++",
+        }.get(name, name)
 
-        with torch.no_grad():
-            y = model(x)
-            # UNet++ deep supervision safety (even though deep_supervision=False here)
-            if isinstance(y, (list, tuple)):
-                y = y[-1]
+        rows.append((display_name, params_m, mb))
 
-        print(
-            f"{name:15s}: "
-            f"{params/1e6:8.3f} M params | "
-            f"~{sizeof_mb(model):6.1f} MB params | "
-            f"out={tuple(y.shape)}"
-        )
+    print("\n| Model           | Trainable Parameters (M) | Memory Footprint |")
+    print("| --------------- | ------------------------ | ---------------- |")
+    for model_name, params_m, mb in rows:
+        print(f"| {model_name:<15} | {params_m:>6.2f} M                  | ~{mb:>5.1f} MB         |")
 
-    print(f"\nTotal trainable params across listed models: {total_params/1e6:.3f} M\n")
+    print(f"\nTotal trainable params across listed models: {sum(row[1] for row in rows):.3f} M\n")
+
+    # Save model size table to checkpoints/
+    out_csv = PROJECT_ROOT / "checkpoints" / "model_size_summary.csv"
+    out_csv.parent.mkdir(parents=True, exist_ok=True)
+
+    df = pd.DataFrame(rows, columns=["Model", "Trainable Parameters (M)", "Memory Footprint (MB)"])
+    df["Trainable Parameters (M)"] = df["Trainable Parameters (M)"].round(2)
+    df["Memory Footprint (MB)"] = df["Memory Footprint (MB)"].round(1)
+    df.to_csv(out_csv, index=False)
+
+    print(f"Saved model size summary CSV to: {out_csv}")
 
 
 if __name__ == "__main__":

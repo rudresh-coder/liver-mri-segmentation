@@ -1,0 +1,5 @@
+Model,Trainable Parameters (M),Memory Footprint (MB)
+U-Net,13.39,51.1
+Small U-Net,7.77,29.6
+Attention U-Net,13.79,52.6
+UNet++,24.83,94.7
