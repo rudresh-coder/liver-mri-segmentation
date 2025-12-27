@@ -128,7 +128,7 @@ for idx, img_name in enumerate(image_files):
     if total_plots == 1:
         axes = [axes]  
     
-    fig.suptitle(f"Test Sample {idx + 1}: {img_name}", fontsize=14)
+    # fig.suptitle(f"Test Sample {idx + 1}: {img_name}", fontsize=14)
 
     axes[0].imshow(image.squeeze().cpu(), cmap="gray")
     axes[0].set_title("MRI")
