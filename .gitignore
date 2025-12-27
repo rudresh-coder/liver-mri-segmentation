@@ -18,9 +18,12 @@ data/raw/
 data/processed/
 
 # Model checkpoints
-checkpoints/
+checkpoints/*
 *.pth
 *.pt
+
+# Keep CSV logs
+!checkpoints/*.csv 
 
 # IDE / Editor configs
 .vscode/
