@@ -1,0 +1,5 @@
+model,mean_dice,std_dev
+AttentionUNet,0.8315,0.289
+SmallUNet,0.8962,0.179
+UNet,0.9058,0.191
+UNet++,0.9387,0.119

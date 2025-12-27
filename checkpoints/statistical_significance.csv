@@ -1,0 +1,4 @@
+Comparison,p-value,Significant (p<0.05)
+UNet++ vs UNet,0.000103902,TRUE
+UNet++ vs SmallUNet,2.98E-08,TRUE
+UNet++ vs AttentionUNet,1.60E-08,TRUE
